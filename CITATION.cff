@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use PhysicalRSI, please cite this project."
+title: "Physical RSI 1.0: Recursive Self-Harness for Scaling Embodied Skills"
+authors:
+  - name: "MMLab & PhysicalRSI contributors"
+date-released: '2026-10-05'
+version: 0.2.0
+url: "https://mmlab.hk/research/PhysicalRSI"
+repository-code: "https://github.com/PhysicalRSI/PhysicalRSI"
+license: Apache-2.0
+type: software

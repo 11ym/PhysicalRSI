@@ -1,0 +1,8 @@
+{
+  "schema": "physicalrsi.task/v1",
+  "name": "quickstart-baseline",
+  "entrypoint": "examples.quickstart.demo_task:create",
+  "configuration": {
+    "goal": "place_block"
+  }
+}
