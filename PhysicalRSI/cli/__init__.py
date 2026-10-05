@@ -6,6 +6,11 @@ from pathlib import Path
 
 
 def main(argv=None):
+    import sys
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    if arguments[:1] == ['auto-engineering']:
+        from PhysicalRSI_demos.auto_engineering.__main__ import main as lab_main
+        return lab_main(arguments[1:])
     parser = argparse.ArgumentParser(
         prog="physicalrsi", description="physicalRSI · composable embodied intelligence"
     )

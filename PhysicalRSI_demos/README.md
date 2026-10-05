@@ -55,3 +55,6 @@ Use a fresh workspace for `/evolve` to run the complete Self-Harness service exa
 ## Media provenance
 
 [`media/manifest.json`](media/manifest.json) binds each copied file to its source path, size and SHA256. The original piano JSON is preserved separately. Upstream notices are in `media/LICENSE.robopianist` and `media/LICENSE.dexjoco`; see the root [NOTICE](../NOTICE). No video is presented as evidence of a newly completed training or evaluation run.
+
+
+The [auto-engineering lab](auto_engineering/README.md) adds a self-built Isaac Sim sample-transfer scene and a native Self-Harness repair demonstration. Run it with `./physicalrsi auto-engineering --help`; it requires a separately installed Isaac Sim environment.

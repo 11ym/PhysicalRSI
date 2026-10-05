@@ -27,6 +27,7 @@ exclude = ["PhysicalRSI_baselines.robodojo.XPolicyLab*", "PhysicalRSI_baselines.
 [tool.setuptools.package-data]
 "PhysicalRSI.cli" = ["assets/*"]
 "PhysicalRSI_demos.showcase" = ["web/*"]
+"PhysicalRSI_demos.auto_engineering" = ["README.md", "TODO.md", "requirements-isaac.txt"]
 "PhysicalRSI_demos" = ["media/*", "piano_skill_library/**/*.json", "piano_skill_library/**/*.md", "piano_skill_library/*.md", "piano_skill_library/*.json"]
 "PhysicalRSI_baselines.robodojo" = ["configs/*.json", "provenance.json", "releases/robodojo-v1/*", "releases/robodojo-v1/**/*"]
 "PhysicalRSI_baselines.robodojo.skills" = ["README.md", "NOTICE.md", "LICENSE.*"]

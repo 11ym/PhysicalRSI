@@ -1,0 +1,142 @@
+# Auto-engineering lab demo
+
+See the [integration TODO](TODO.md) for the planned skill condensation, memory
+retrieval and controlled transfer experiments through the physicalRSI pipeline.
+
+A self-built Isaac Sim scene: a Franka arm transfers a blue sample tube from a
+source stand into a green receiving rack without disturbing an amber beaker
+or a red distractor. The bench, racks, room and sample vials are authored for this demo. Optional
+LabUtopia meshes supply the glass beaker and background drying oven, while a
+Poly Haven HDRI supplies studio illumination. No RoboDojo scene, task registry
+or expert trajectory is used. The Franka robot is an external NVIDIA asset.
+
+The workflow follows the engineering loop described in
+[General Robotics' Auto-Engineering article](https://www.generalrobotics.company/post/introducing-auto-engineering-for-robotics):
+
+1. **Robot ingestion:** record joint names, sensor contracts, simulator and assets.
+2. **World experience:** build a lab and generate reproducible randomized layouts.
+3. **Skill creation:** compose RGB-D detection with physical pick/lift/carry/release.
+4. **Evaluation and repair:** diagnose a development failure, propose a higher
+   carrying path, compare both versions on new paired layouts, and retain only
+   an improvement through the existing `SelfHarness` and `HarnessState`.
+
+## Presentation assets
+
+Download assets outside the source tree using a separate Python environment
+with `usd-core` installed:
+
+```bash
+python scripts/prepare_lab_assets.py --assets-dir /path/to/lab-assets
+export PHYSICALRSI_LAB_ASSETS=/path/to/lab-assets
+```
+
+The script checks the LabUtopia source digest and records the derived mesh and
+HDRI hashes. LabUtopia assets are **CC BY-NC 4.0**; Poly Haven lighting is **CC0**.
+See the generated `lab-assets.json` for source links and modifications. Assets
+are downloaded separately and are not redistributed in this repository. The
+lab uses authored fallback glassware if the optional assets are absent.
+
+## Run
+
+Use Python 3.11 with Isaac Sim 5.1 and its extension cache installed, following
+[NVIDIA's instructions](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/install_python.html).
+Install the simulator dependencies with
+`/path/to/isaac-env/bin/python -m pip install -r PhysicalRSI_demos/auto_engineering/requirements-isaac.txt`.
+Install the lightweight physicalRSI dependencies in the launcher environment.
+Run from the repository root:
+
+```bash
+./physicalrsi auto-engineering \
+  --workspace /path/to/fresh/lab-run \
+  --isaac-python /path/to/isaac-env/bin/python \
+  --episodes 3
+```
+
+The command executes one native development episode, then (if a repair is
+proposed) three paired validation layouts for each policy. Outputs include:
+
+- `index.html`: local video report, diagnosis, scores and selected revision.
+- `round-001/development/`: RGB, depth, USD scene, video and native evidence.
+- `round-001/episodes/`: parent/child validation recordings on identical layouts.
+- `round-001/selection.json`: verified paired selection, when a comparison exists.
+- `state/history/`: immutable lineage and source-bound evidence.
+
+A tie retains the parent. A failed process aborts the round; it is not counted
+as an ordinary policy failure. Existing workspaces are not silently rerun.
+Inspect their evidence and use a new workspace for a new run. `--gui` requests
+a visible Isaac window. To rebuild the report from completed evidence:
+
+```bash
+./physicalrsi auto-engineering --workspace /path/to/lab-run --report-only
+```
+
+For an individual native episode, write a memory JSON containing
+`{"transit_height_m": 0.36, "sample_height_m": 0.12}` and run:
+
+```bash
+/path/to/isaac-env/bin/python -m PhysicalRSI_demos.auto_engineering.isaac_scene \
+  --seed 17 --memory /path/to/memory.json --output /path/to/new-episode
+```
+
+## What the result means
+
+This is a **simulation development demo**, not a reproduction of GRID's full
+platform, physical deployment, or a benchmark-wide score. Its System 2 is one
+explicit, bounded engineering rule authored by Codex: use a detected obstacle's
+height and sample dimensions to propose a higher transit path. It does not
+claim unrestricted autonomous code synthesis or model training.
+
+System 1 receives color detections from RGB, rendered metric depth, camera
+calibration and robot proprioception. Color labels intentionally make this
+first demo inspectable. It does not use a learned general-purpose detector or
+RGB-only depth estimation. Simulator object poses are restricted to evaluation and presentation recording;
+they are never supplied to the policy. The
+policy runs as reviewed in-process code; this boundary is not an OS sandbox
+attestation.
+
+The evaluator checks the correct sample's destination, upright orientation,
+release, settling, and disturbance of the beaker and distractor. Beaker
+translation is a limited obstacle-disturbance check, not exhaustive contact
+certification. Detailed render meshes use declared cylindrical collision proxies. The beaker
+has a glass render mesh; no liquid is simulated.
+There are no teleportation actions or synthetic attachment joints.
+
+Scene generation, policy, perception and evaluator code are frozen by source
+hashes for a round. Native receipts retain layout identities and file digests.
+The external Isaac/NVIDIA dependency and asset closure is not fully attested.
+`qualification` remains `null` even if all declared simulation checks pass.
+
+## Software checks
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -p no:cacheprovider tests/test_auto_engineering.py
+```
+
+These check sensor filtering, layout generation, evaluator failure cases and
+bounded repair behavior. They do not prove that Isaac Sim initializes or that
+a robot completes the task; only native receipts and recordings establish that.
+
+## High-quality success video
+
+A successful native episode records rigid-body poses alongside its joint trace.
+Render those measured states with the Isaac environment:
+
+```bash
+OMNI_KIT_ACCEPT_EULA=YES /path/to/isaac-env/bin/python \
+  -m PhysicalRSI_demos.auto_engineering.high_quality \
+  --episode /path/to/successful/episode --output /path/to/new-render \
+  --width 3840 --height 2160 --samples 512
+```
+
+This uses path tracing, 16 ray bounces, denoising and a high-quality H.264 export.
+`--frame 300` renders one recorded frame for a quality/time check; add `--count 3`
+to measure consecutive-frame throughput. Lossless PNG frames are retained beside
+the video. After interruption, repeat the identical command with `--resume` to
+verify and reuse completed frames. A complete NVIDIA driver installation, including the OptiX denoiser
+weights, is required for denoising. On a headless container with an unusable
+GLX Vulkan ICD, set `VK_ICD_FILENAMES` to the EGL ICD written by the native
+harness in its runtime directory (or an equivalent system EGL ICD). The source
+receipt and trajectory digests bind the render to the native episode. Recorded body positions and rotations are checked after every captured frame. Physics
+is disabled during presentation replay: this is a re-render of measured states,
+not a second evaluation or additional success evidence. The original native
+video and receipts remain available for comparison.

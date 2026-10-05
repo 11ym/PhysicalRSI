@@ -87,7 +87,9 @@ A few conventions keep contributions useful across systems: declare the task and
 
 [Core guide](PhysicalRSI_core/README.md) · [Architecture](docs/architecture.md) · [Development guide](AGENTS.md)
 
-## Baseline · RoboDojo
+## Baseline · RoboDojo / XPolicyLab
+
+[XPolicyLab](https://github.com/XPolicyLab/XPolicyLab) is the upstream project for our RoboDojo integration. See the [PhysicalRSI integration and provenance](docs/xpolicylab-pr.md) for the reviewed changes and pinned source.
 
 Our RoboDojo baseline includes the agent, task-aware memory, and the pi05, pi05-sparse-memory and code-policy skill integrations in [XPolicyLab PR #147](https://github.com/XPolicyLab/XPolicyLab/pull/147), maintained from the PhysicalRSI organization fork. It carries forward yanming03's original [PR #144](https://github.com/XPolicyLab/XPolicyLab/pull/144).
 
@@ -96,6 +98,12 @@ The full fork is pinned at `393f730` under `PhysicalRSI_baselines/robodojo/XPoli
 [Baseline setup and provenance →](PhysicalRSI_baselines/README.md)
 
 ## Demos
+
+### Auto-engineering lab
+
+A self-built Isaac Sim lab for RGB-D sample transfer and an evidence-driven clearance repair. System 1 executes the code policy; System 2 proposes a bounded memory change, compares it on new paired layouts, and records the selected revision. This optional simulation demo requires an Isaac Sim 5.1 environment.
+
+[Run the lab demo and inspect its evidence →](PhysicalRSI_demos/auto_engineering/README.md)
 
 ### Classical piano
 
