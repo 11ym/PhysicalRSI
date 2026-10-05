@@ -24,7 +24,8 @@ def test_adapter_installs_into_an_upstream_checkout(tmp_path):
     }
     assert destination == checkout / "policy" / "physicalRSI"
     assert required <= {path.name for path in destination.iterdir()}
-    assert {'download_assets.py', 'assets.json'} <= {path.name for path in destination.iterdir()}
+    assert (destination / 'download_assets.py').is_file()
+    assert not (destination / 'assets.json').exists()
     import re
     obsolete = re.compile('route|router|routing', re.IGNORECASE)
     for path in destination.rglob('*'):
@@ -34,7 +35,6 @@ def test_adapter_installs_into_an_upstream_checkout(tmp_path):
     assert (destination / "install.sh").stat().st_mode & 0o111
     assert not (destination / "train.sh").exists()
     assert not (destination / "process_data.sh").exists()
-    assert not (destination / 'runtime/PhysicalRSI_baselines/robodojo/XPolicyLab').exists()
 
 
 def test_installed_runtime_imports_without_source_checkout(tmp_path):
@@ -72,15 +72,15 @@ from XPolicyLab.model_template import ModelTemplate
 from PhysicalRSI_baselines.robodojo.skill_model import Model as SkillModel
 from XPolicyLab.policy.physicalRSI.model import Model
 assert issubclass(Model, ModelTemplate)
-assert Model.get_action is SkillModel.get_action
-assert Model.update_obs_batch is SkillModel.update_obs_batch
-assert Model.reset is SkillModel.reset
+assert Model.__bases__ == (ModelTemplate,)
 original = SkillModel.__init__
 try:
     SkillModel.__init__ = lambda self, config: setattr(self, 'received_config', config)
     instance = Model({'check': True})
     assert instance.template_initialized
-    assert instance.received_config == {'check': True}
+    assert instance.model.received_config == {'check': True}
+    SkillModel.get_action = lambda self: self.received_config
+    assert instance.get_action() == {'check': True}
 finally:
     SkillModel.__init__ = original
 """

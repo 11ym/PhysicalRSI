@@ -76,7 +76,8 @@ def banner(console, workspace, *, plain=False):
         console.print(Text(logo.rstrip(), style="#4dbaac"))
     body = Text("Composable embodied intelligence\n", style="dim")
     body.append(str(workspace) + "\n\n", style="dim")
-    body.append("/demo  /task  /scheme  /harness  /baseline  /help", style="#4dbaac")
+    body.append("/demo piano  /demo dexjoco  /robodojo  /help", style="#4dbaac")
+    body.append("\n/layouts → /collect → /train · /cycle · /experiment", style="#4dbaac")
     body.append("\n/model config.json · configure conversation", style="dim")
     console.print(Panel(body, title=title, title_align="left", border_style="#4dbaac"))
 

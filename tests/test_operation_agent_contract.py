@@ -40,10 +40,16 @@ def test_valid_execution_modes(monkeypatch, composition, operations):
     assert invoke(monkeypatch, plan)[0] == plan
 
 
-def test_independent_skill_is_used_when_memory_has_no_matching_operation(monkeypatch):
-    plan = dict(composition='library', operations=[], rationale='No declared capability matches.')
-    result, _ = invoke(monkeypatch, plan)
-    assert result == dict(composition='vla', operations=[], rationale='No declared capability matches.')
+@pytest.mark.parametrize('composition,operations', [
+    ('library', []), ('unknown', []), ('unknown', ['execute']),
+    (' library ', ['execute']), (None, []), ([], []),
+])
+def test_invalid_agent_choice_is_rejected_without_substitution(monkeypatch, composition, operations):
+    plan = dict(composition=composition, operations=operations, rationale='No declared capability matches.')
+    with pytest.raises(ValueError):
+        invoke(monkeypatch, plan)
+    assert plan['composition'] == composition
+    assert plan['operations'] == operations
 
 
 def test_independent_skill_cannot_receive_operations(monkeypatch):

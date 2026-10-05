@@ -2,21 +2,21 @@
   "schema": "physicalrsi.skill-compositions/v1",
   "compositions": {
     "memory-guided-manipulation": {
-      "description": "RGB, robot-state, and instruction-conditioned joint-action inference with the pi05 checkpoint.",
+      "description": "Visual action inference from current RGB observations, robot state, instruction, and episodic memory.",
       "steps": [
         "memory.snapshot",
         "pi05"
       ]
     },
     "memory-guided-visual-history": {
-      "description": "Joint-action inference with the pi05 sparse-memory checkpoint, current robot state, and causal visual history.",
+      "description": "Visual action inference from current RGB observations, robot state, instruction, and sparse visual history memory.",
       "steps": [
         "memory.snapshot",
         "pi05-sparse-memory"
       ]
     },
     "memory-guided-primitive-program": {
-      "description": "Execution of a supplied primitive program through its declared perception, kinematics, and control interfaces.",
+      "description": "Observation-grounded closed-loop manipulation through declared skill contracts and physical-state memory.",
       "steps": [
         "memory.snapshot",
         "code-policy"

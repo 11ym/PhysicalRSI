@@ -60,3 +60,20 @@ def test_deduplicated_archive_restores_every_path_once(tmp_path):
     assert (target / 'first/weights').read_bytes() == data
     assert (target / 'second/weights').read_bytes() == data
     assert (target / 'first/weights').stat().st_ino == (target / 'second/weights').stat().st_ino
+
+
+def test_manifest_is_downloaded_pinned_and_kept_with_assets(tmp_path):
+    import json
+    source = tmp_path / 'release.json'
+    source.write_text(json.dumps({'assets': [{'name': 'test'}]}))
+    digest = download.sha256(source)
+    output = tmp_path / 'installed'
+    assert download.load_manifest(source.as_uri(), output, digest)['assets'][0]['name'] == 'test'
+    assert (output / 'assets.json').read_bytes() == source.read_bytes()
+    assert json.loads((output / 'assets.provenance.json').read_text())['sha256'] == digest
+    with pytest.raises(ValueError, match='Manifest checksum'):
+        download.load_manifest(source.as_uri(), tmp_path / 'bad', '0' * 64)
+    assert not (tmp_path / 'bad').exists()
+    source.write_text(json.dumps({'assets': [{'name': 'another'}]}))
+    with pytest.raises(FileExistsError, match='Different manifest'):
+        download.load_manifest(source, output)

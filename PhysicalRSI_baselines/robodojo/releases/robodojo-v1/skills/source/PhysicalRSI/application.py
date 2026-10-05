@@ -365,6 +365,38 @@ class Application:
             "baselines": "RoboDojo software baseline implemented; native reproduction not qualified",
         }
 
+    def evaluation_status(self) -> dict:
+        """Read separately recorded evaluation runs without merging candidates."""
+        root = Path.cwd() / ".release-staging" / "archive-dsw-eval"
+        comparison = root / "LIVE_COMPARISON.json"
+        try:
+            snapshot = read_json(comparison)
+            if not isinstance(snapshot.get("runs"), dict):
+                raise ValueError("Evaluation snapshot has no separate run records")
+        except (OSError, ValueError, AttributeError) as error:
+            return {
+                "status": "unavailable",
+                "source": str(comparison),
+                "error": str(error),
+                "scope": "local diagnostic status; not a leaderboard score",
+            }
+        runs = {}
+        for name, record in snapshot["runs"].items():
+            rows = record.get("results", [])
+            runs[name] = {
+                "completed": sum(row.get("status") == "complete" for row in rows),
+                "unresolved": [row["task"] for row in rows
+                               if row.get("status") != "complete"],
+                "results": rows,
+                "score_review": record.get("score_review", []),
+            }
+        return {
+            "source": str(comparison),
+            "runs": runs,
+            "reference": snapshot.get("reference"),
+            "scope": "Separate candidate diagnostics; unresolved records do not establish live workers or zero scores.",
+        }
+
     def tools(self):
         from PhysicalRSI.Embodied_Harness.tools.gateway import ToolBinding, ToolGateway
 

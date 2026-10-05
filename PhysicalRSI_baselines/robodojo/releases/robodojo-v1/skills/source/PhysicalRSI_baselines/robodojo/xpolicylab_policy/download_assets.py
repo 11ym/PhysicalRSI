@@ -10,6 +10,45 @@ import tempfile
 import urllib.request
 
 
+# A default release reference is replaceable; asset inventories belong to releases.
+DEFAULT_MANIFEST = 'https://github.com/PhysicalRSI/XPolicyLab/releases/download/physicalrsi-skill-assets-v4/assets.json'
+DEFAULT_MANIFEST_SHA256 = '0eed83202427dc6b4c75cde613246f8f6e606cac6c8da3bd71ebc6798d6963d2'
+
+
+def load_manifest(source, output, expected_sha256=None):
+    """Fetch release metadata and retain its exact bytes with the downloaded assets."""
+    if str(source).startswith(('https://', 'http://', 'file://')):
+        with urllib.request.urlopen(str(source), timeout=120) as response:
+            raw = response.read(8 * 1024 * 1024 + 1)
+    else:
+        raw = Path(source).read_bytes()
+    if len(raw) > 8 * 1024 * 1024:
+        raise ValueError('Asset manifest is too large')
+    digest = hashlib.sha256(raw).hexdigest()
+    if expected_sha256 and digest != expected_sha256:
+        raise ValueError('Manifest checksum mismatch')
+    manifest = json.loads(raw)
+    assets = manifest.get('assets')
+    if not isinstance(assets, list) or not assets:
+        raise ValueError('A nonempty asset manifest is required')
+    names = [asset['name'] for asset in assets]
+    if len(set(names)) != len(names):
+        raise ValueError('Duplicate asset names')
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
+    target = output / 'assets.json'
+    if target.exists() and target.read_bytes() != raw:
+        raise FileExistsError('Different manifest already installed; use a new output directory')
+    if not target.exists():
+        with target.open('xb') as stream:
+            stream.write(raw)
+    provenance = output / 'assets.provenance.json'
+    if not provenance.exists():
+        with provenance.open('x') as stream:
+            json.dump({'source': str(source), 'sha256': digest}, stream, indent=2)
+    return manifest
+
+
 def relative(value):
     path = Path(value)
     if path.is_absolute() or '..' in path.parts or not path.parts:
@@ -104,11 +143,13 @@ def install(asset, root):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--manifest', type=Path, default=Path(__file__).with_name('assets.json'))
+    parser.add_argument('--manifest', default=DEFAULT_MANIFEST, help='Release manifest URL or local path')
+    parser.add_argument('--manifest-sha256', help='Expected SHA-256; the default release is pinned automatically')
     parser.add_argument('--output', type=Path, default=Path('skill-assets'))
     parser.add_argument('--asset', action='append', help='Select one or more asset names; default all')
     args = parser.parse_args()
-    manifest = json.loads(args.manifest.read_text())
+    expected = args.manifest_sha256 or (DEFAULT_MANIFEST_SHA256 if args.manifest == DEFAULT_MANIFEST else None)
+    manifest = load_manifest(args.manifest, args.output, expected)
     selected = set(args.asset or [asset['name'] for asset in manifest['assets']])
     available = {asset['name'] for asset in manifest['assets']}
     if selected - available:

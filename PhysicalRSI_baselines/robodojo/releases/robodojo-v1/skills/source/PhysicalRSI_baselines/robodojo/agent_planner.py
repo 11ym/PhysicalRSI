@@ -42,7 +42,7 @@ def _planner_value(value, key=None):
     if isinstance(value, dict):
         result = {}
         for name, child in value.items():
-            if name in {'implementation', 'source', 'provenance', 'capability_id', 'skill_name',
+            if name in {'implementation', 'source', 'source_name', 'provenance', 'capability_id', 'skill_name',
                         'configuration', 'evidence'}:
                 continue
             if name == 'operation_memory':
@@ -132,14 +132,20 @@ class AgentPlanner:
                 'Return JSON with exactly composition, operations, and rationale. Choose a '
                 'supplied composition name. For a composition without the operation library, '
                 'return an empty operations list. For the operation library, select exactly '
-                'one opaque operation handle only when its capability description clearly '
-                'matches the instruction and visible scene. A missing structured object label '
-                'is unknown, not a mismatch: use the instruction together with the RGB image '
-                'and capability memory, and do not fall back merely because the serialized '
-                'observation lacks detections. Use the general visual composition only when '
-                'no capability description semantically matches. Treat operation identifiers '
+                'one operation handle when its declared capability covers the requested '
+                'manipulation and its execution conditions fit the visible scene. Compare '
+                'the supplied capabilities by supported behavior, geometry and input/output '
+                'contracts. Current RGB availability is not a reason to prefer a learned '
+                'composition: structured visual operations also use RGB. When a structured '
+                'operation has explicit compatible support, use that evidence; otherwise '
+                'choose a suitable learned composition. Semantic similarity alone does not '
+                'establish geometric compatibility. A missing structured object label is '
+                'unknown, not a mismatch: use the instruction together with RGB and memory. '
+                'Do not infer unsupported behavior from a capability name. Treat identifiers '
                 'as opaque handles and use only the capability contracts and parameters '
-                'described in memory.'
+                'described in memory. Episode reset or return-home behavior is a shared '
+                'lifecycle action; it must not disqualify a capability that covers the '
+                'instruction\'s manipulation objective.'
             )
             if compositions is None:
                 messages[0]['content'] = (
@@ -174,9 +180,10 @@ class AgentPlanner:
                     or any(not isinstance(name, str) for name in plan['operations'])):
                 raise ValueError('Agent must return a bounded executable operation sequence')
             names = plan['operations']
-            if compositions is not None and plan.get('composition') not in compositions:
-                raise ValueError('Agent operation plan contains an unknown composition')
             if compositions is not None:
+                if (not isinstance(plan.get('composition'), str)
+                        or plan['composition'] not in compositions):
+                    raise ValueError('Agent operation plan contains an unknown composition')
                 uses_library = compositions[plan['composition']]['steps'][-1] == 'memory-program-library'
                 if uses_library and not names:
                     raise ValueError('Operation library requires an executable operation')

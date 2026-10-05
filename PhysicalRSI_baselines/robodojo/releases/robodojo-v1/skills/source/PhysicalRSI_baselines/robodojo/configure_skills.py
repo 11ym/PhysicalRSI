@@ -130,7 +130,8 @@ def configure(assets, *, python, output, evidence, endpoint, model, framework=No
             composition = 'memory-guided-program-library'
             config['composition_definitions'][composition] = {
                 'description': 'Observation-grounded operation memory for reusable visual manipulation capabilities.',
-                'action_type': 'joint',
+                'action_types': sorted({entry['action_type'] for entry in program_registry.values()}),
+                'action_contract': 'Each action preserves its operation representation. The evaluation client infers joint or end-effector control from the action keys.',
                 'steps': ['memory.snapshot', 'memory-program-library']}
             config['compositions'].append(composition)
     output = Path(output)

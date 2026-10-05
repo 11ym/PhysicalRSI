@@ -58,7 +58,8 @@ def test_memory_choice_reaches_execution_without_mutating_inputs(tmp_path, monke
     assert model.memory.read()['task_specific_policy_memory']['run_context'] == {'lessons': []}
     assert 'capabilities' in model.memory.read()['task_specific_policy_memory']['library']
     model.reset()
-    assert implementations[0].closed
+    assert not implementations[0].closed
+    assert len(implementations) == 1
     model.update_obs_batch([row])
     assert len(decisions) == 2
     model.close()
@@ -83,7 +84,8 @@ def test_agent_failure_cannot_fall_back_to_any_skill(tmp_path, monkeypatch):
     model.planner.plan = fail
     with pytest.raises(RuntimeError, match='API unavailable'):
         model.update_obs({'env_idx': 0, 'instruction': 'move'})
-    assert not implementations
+    assert len(implementations) == 1
+    assert not implementations[0].observed
     with pytest.raises(RuntimeError):
         model.get_action()
     model.close()
@@ -125,7 +127,8 @@ def test_unregistered_choice_fails_before_loading(tmp_path, monkeypatch):
     model.planner.plan = lambda **kwargs: {'composition': 'unknown', 'rationale': 'test'}
     with pytest.raises(ValueError, match='registered skill'):
         model.update_obs({'instruction': 'move'})
-    assert not implementations
+    assert len(implementations) == 1
+    assert not implementations[0].observed
     model.close()
 
 
@@ -194,3 +197,12 @@ def test_episode_plan_rejects_reordering_even_with_matching_unit_contracts(tmp_p
     with pytest.raises(ValueError, match='exact registered'):
         freeze_episode_plan(tmp_path / 'plan.json', plan, {digest(memory): memory})
     assert not (tmp_path / 'plan.json').exists()
+
+
+def test_checkpoint_skill_is_ready_before_first_observation(tmp_path, monkeypatch):
+    model, decisions, implementations = configured(tmp_path, monkeypatch)
+    assert len(implementations) == 1
+    assert not decisions
+    assert not implementations[0].observed
+    model.close()
+    assert implementations[0].closed

@@ -20,7 +20,7 @@ def install(checkout, *, native_client=False):
         entry
         for entry in source.iterdir()
         if entry.is_file()
-        and entry.name != "__pycache__"
+        and entry.name not in {"__pycache__", "assets.json"}
         and (
             not native_client
             or entry.name in {"__init__.py", "deploy.py", "deploy.yml"}
@@ -58,8 +58,14 @@ def install(checkout, *, native_client=False):
                     raise FileExistsError(f"Refusing to replace changed runtime: {target}")
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(incoming, target)
+        # The adapter imports an installed package; entrypoints never edit sys.path.
+        (destination / "runtime" / "pyproject.toml").write_text(
+            '[build-system]\nrequires = ["setuptools>=68"]\nbuild-backend = "setuptools.build_meta"\n'
+            '[project]\nname = "physicalrsi-runtime"\nversion = "0.1.0"\nrequires-python = ">=3.11"\n'
+            '[tool.setuptools.packages.find]\ninclude = ["PhysicalRSI*"]\n'
+            '[tool.setuptools.package-data]\n"*" = ["*.json", "*.yml", "*.yaml", "LICENSE*", "NOTICE*"]\n')
         release = Path(__file__).parent / "releases/robodojo-v1"
-        for name in ("download_assets.py", "assets.json"):
+        for name in ("download_assets.py",):
             incoming = release / name
             # Portable source exports carry these files beside the adapter.
             if not incoming.is_file():

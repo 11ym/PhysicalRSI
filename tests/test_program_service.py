@@ -2,23 +2,6 @@ import pytest
 from PhysicalRSI_baselines.robodojo.skills import program_service
 
 
-def test_materialized_transport_gets_an_isolated_policy_namespace(tmp_path):
-    source = tmp_path / 'source'
-    (source / 'policy' / 'rdj_rgb').mkdir(parents=True)
-    (source / 'policy' / 'rdj_rgb' / 'model.py').write_text('original')
-    (source / '.rdj-source-revision').write_text('frozen')
-    (source / 'setup_policy_server.py').write_text('server')
-    output = tmp_path / 'episode'
-    output.mkdir()
-    command = ['python', 'manager.py', '--xpolicylab', str(source)]
-    actual = program_service.isolate_transport(command, output)
-    assert command[-1] == str(source)
-    assert actual[-1] == str(output / 'XPolicyLab')
-    assert not (output / 'XPolicyLab/policy/rdj_rgb').exists()
-    assert (source / 'policy/rdj_rgb/model.py').read_text() == 'original'
-    assert (output / 'XPolicyLab/.rdj-source-revision').read_text() == 'frozen'
-
-
 def test_changed_program_is_rejected_before_start(tmp_path, monkeypatch):
     source = tmp_path / 'program.py'
     source.write_text('changed')
@@ -54,3 +37,53 @@ def test_fixed_base_program_omits_only_mobile_metadata_without_mutating_input():
     assert prepared['state']['left_arm_joint_state'] is joints
     assert prepared['vision'] is observation['vision']
     assert prepared['state']['unexpected'] == 1
+
+
+def test_private_worker_roundtrip_without_server_or_framework_copy(tmp_path):
+    import hashlib
+    import json
+    import sys
+    import numpy as np
+    runtime = tmp_path / 'runtime'
+    (runtime / 'transport').mkdir(parents=True)
+    (runtime / 'transport/__init__.py').write_text('')
+    (runtime / 'transport/binding.py').write_text(
+        'class Echo:\n'
+        '    def reset(self): self.rows = []\n'
+        '    def update_obs_batch(self, rows): self.rows = rows\n'
+        '    def get_action_batch(self, indices):\n'
+        '        return [[{"left_arm_joint_state": self.rows[0]["state"]["joints"]}] for i in indices]\n'
+        'def load_bound_model(descriptor): return Echo()\n')
+    launcher = runtime / 'launch.py'
+    launcher.write_text(
+        'import json\n'
+        'def expand(value, variables): return value\n'
+        'def validate(descriptor): pass\n'
+        'def reserve_service_endpoints(descriptor): return []\n'
+        'def environment(descriptor, inherited): return inherited\n'
+        'def write_json(path, value): path.write_text(json.dumps(value))\n')
+    descriptor = runtime / 'descriptor.json'
+    descriptor.write_text(json.dumps({'pythonpath': [], 'services': [], 'transport': {}}))
+    config = dict(cwd=str(tmp_path), output=str(tmp_path / 'output'),
+                  command=[sys.executable, str(launcher), '--descriptor', str(descriptor),
+                           '--assets', str(tmp_path), '--output', '{output}',
+                           '--framework-root', str(tmp_path / 'framework'),
+                           '--python', sys.executable, '--port', '{port}'],
+                  files={str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                         for p in (launcher, descriptor)}, startup_timeout_s=10)
+    model = program_service.Model(config)
+    process = model.process
+    try:
+        joints = np.arange(6, dtype=np.float64)
+        model.update_obs_batch([{'env_idx': 4, 'state': {'joints': joints}}])
+        np.testing.assert_array_equal(model.get_action_batch([4])[0][0]['left_arm_joint_state'], joints)
+        assert not (model.output / 'XPolicyLab').exists()
+        assert not hasattr(model, 'client')
+        with pytest.raises(RuntimeError, match='Code skill failed'):
+            model._call('unknown')
+        with pytest.raises(RuntimeError, match='not running'):
+            model.reset()
+    finally:
+        model.close()
+    assert process.poll() is not None
+    assert model.pipe.closed

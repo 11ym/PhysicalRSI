@@ -5,7 +5,7 @@
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "align-blocks",
-      "description": "Visual edge localization, relative-pose estimation, and staged alignment motion from RGB observations and robot state.",
+      "description": "RGB straightedge localization and tool-mediated contact alignment of multiple blocks.",
       "implementation": {
         "kind": "code-policy",
         "module": "align_blocks_rgb_straightedge.model",
@@ -63,7 +63,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -88,13 +88,26 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-458abec77ffab3fc1fb8b3f5"
+      "capability_id": "cap-84a9bda0e3d5939a41446a77",
+      "observation_cues": [
+        "A visible straightedge is the contact tool; block positions are estimated from RGB.",
+        "The tool edge supplies a common alignment reference for multiple objects."
+      ],
+      "execution_scope": {
+        "requirements": [
+          "A visible straightedge is the contact tool; block positions are estimated from RGB.",
+          "The tool edge supplies a common alignment reference for multiple objects."
+        ],
+        "unsupported": [
+          "Directly pushing one shaped object toward a target silhouette uses a different contact model."
+        ]
+      }
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "arrange-largest-number-random",
-      "description": "Visual digit recognition and ordering, followed by grasp planning and sequential placement of the recognized pieces.",
+      "description": "Visual symbol grounding, ordering, and reachable object placement under observed geometry.",
       "implementation": {
         "kind": "code-policy",
         "module": "arrange_rgb.model",
@@ -180,7 +193,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -205,13 +218,13 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-0c5e804e5b7569e3f0d4ec4d"
+      "capability_id": "cap-c018942a348246d2287f2e0c"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "classify-objects",
-      "description": "Visual attribute classification and object localization, followed by grasp-and-place motion for the supported object categories.",
+      "description": "Visual attribute grounding with category-aware localization and bounded grasp-and-place control.",
       "implementation": {
         "kind": "code-policy",
         "module": "rdj_v1_classify_objects.model",
@@ -262,7 +275,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -280,29 +293,8 @@
         }
       ],
       "geometry_support": {
-        "status": "declared_source_constraints",
-        "object_vocabulary": [
-          "camera",
-          "toy_car",
-          "watch",
-          "pen",
-          "garage"
-        ],
-        "container_count": 3,
-        "evidence": [
-          {
-            "root": "code-skills",
-            "path": "skills/rdj_v1_classify_objects/6bb861ace4b706d9/rdj_v1_classify_objects/perception.py",
-            "sha256": "1e6b77c65f24340423f7d0662bd467bad3dc25655980fb4312afda711d9420e6",
-            "line": 32
-          },
-          {
-            "root": "code-skills",
-            "path": "skills/rdj_v1_classify_objects/6bb861ace4b706d9/rdj_v1_classify_objects/model.py",
-            "sha256": "10f83169684d71b097d8e59a23ac5c905a6a04e247cbcd7bec9c83304dfc24b6",
-            "line": 108
-          }
-        ]
+        "status": "not_fully_formalized",
+        "meaning": "Do not infer geometric compatibility from a skill name alone."
       },
       "provenance": {
         "type": "implementation_inspection",
@@ -318,13 +310,13 @@
           "line": 107
         }
       },
-      "capability_id": "cap-c1d666c48567eeadfafd02d8"
+      "capability_id": "cap-99c749c250639637916862f4"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "classify-objects-by-language",
-      "description": "Language-conditioned attribute interpretation and RGB object localization, followed by grasp-and-place motion.",
+      "description": "Language-conditioned attribute grounding with visual localization and bounded object placement.",
       "implementation": {
         "kind": "code-policy",
         "module": "rdj_v1_classify_objects_by_language.model",
@@ -415,7 +407,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -450,13 +442,13 @@
           "line": 18
         }
       },
-      "capability_id": "cap-57ad5d48e1f6d223c02805af"
+      "capability_id": "cap-ebdb7204354ca687ca51e5ea"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "cover-blocks",
-      "description": "RGB shape localization, grasp construction, and placement relative to a visible object footprint.",
+      "description": "Visual shape grounding and footprint-relative placement with reachable grasp control.",
       "implementation": {
         "kind": "code-policy",
         "module": "rdj_cover_submission.model",
@@ -527,7 +519,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -545,41 +537,20 @@
         }
       ],
       "geometry_support": {
-        "status": "declared_source_constraints",
-        "rgb_qualified_instances": {
-          "red": 1,
-          "green": 1,
-          "blue": 1,
-          "cup": 3
-        },
-        "camera_geometry": "Fixed implementation calibration; not estimated per episode",
-        "silhouette_resource": "public_shapes.npz",
-        "evidence": [
-          {
-            "root": "code-skills",
-            "path": "skills/CoverHarnessRGB/ea16ca19ec827b31/CoverHarnessRGB/perception.py",
-            "sha256": "0b48b8a5effed82dc25fa298391c3b990492dd906591933e44e86183ea33f42a",
-            "line": 8
-          },
-          {
-            "root": "code-skills",
-            "path": "skills/CoverHarnessRGB/ea16ca19ec827b31/CoverHarnessRGB/perception.py",
-            "sha256": "0b48b8a5effed82dc25fa298391c3b990492dd906591933e44e86183ea33f42a",
-            "line": 51
-          }
-        ]
+        "status": "not_fully_formalized",
+        "meaning": "Do not infer geometric compatibility from a skill name alone."
       },
       "provenance": {
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-2a7a4ec7f761b5fb67d8982f"
+      "capability_id": "cap-99d1de5fa0e382c6c280e0da"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "deposit-coin",
-      "description": "RGB localization of small objects and openings, with grasp construction, handoff stages, and placement motion.",
+      "description": "RGB localization of a thin coin and a receiving slot, with direct or assisted grasp and insertion.",
       "implementation": {
         "kind": "code-policy",
         "module": "deposit_policy.model",
@@ -650,7 +621,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "The implementation derives a bounded stage plan from current visual geometry and robot state; memory does not authorize arbitrary reordering or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -675,13 +646,24 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-2fe8832ba61f65ed67fc3f00"
+      "capability_id": "cap-1c823bac859def7d29b501ff",
+      "observation_cues": [
+        "The manipulated object is a thin coin and the receiving geometry is a narrow slot."
+      ],
+      "execution_scope": {
+        "requirements": [
+          "The manipulated object is a thin coin and the receiving geometry is a narrow slot."
+        ],
+        "unsupported": [
+          "The coin grasp and insertion geometry does not support bottles or disposal into a large open container."
+        ]
+      }
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "general-pickup",
-      "description": "RGB object localization and geometric grasp construction, followed by staged arm motion using robot-state feedback.",
+      "description": "Instruction-grounded object localization with appearance-conditioned grasp and reachable lifting.",
       "implementation": {
         "kind": "code-policy",
         "module": "rdj_rgb_adapters.general_pickup",
@@ -750,7 +732,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -775,13 +757,13 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-f9b27084e7ba8dc46952655b"
+      "capability_id": "cap-fb747787954eaf38df2a08d1"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "insert-key",
-      "description": "Visual key and opening localization, grasp alignment, and staged insertion motion for the supported geometry.",
+      "description": "Two-object pose grounding with possession checks, alignment, insertion, and bounded contact control.",
       "implementation": {
         "kind": "code-policy",
         "module": "insert_key.model",
@@ -839,7 +821,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -864,13 +846,13 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-42a26a69cd1fe9f980d77706"
+      "capability_id": "cap-9df8c84a28e240ca0e914fae"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "insert-tubes",
-      "description": "Cylindrical-object localization, grasp construction, and axis-aligned insertion motion.",
+      "description": "Object-slot geometry grounding with reachable assignment, alignment refresh, and insertion release.",
       "implementation": {
         "kind": "code-policy",
         "module": "rdj_rgb_adapters.insert_tubes",
@@ -931,7 +913,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -956,13 +938,13 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-b2bfa705688bd1d75ad9e99c"
+      "capability_id": "cap-b00651144406b3498e3bdea3"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "make-kong",
-      "description": "Visual tile localization and staged grasp, handoff, and placement operations for the supported tile arrangement.",
+      "description": "Visual role matching with temporal identity binding, qualified contact, and upright placement.",
       "implementation": {
         "kind": "code-policy",
         "module": "rdj_kong.submission",
@@ -1010,7 +992,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -1035,13 +1017,13 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-9bdc4bcd757661b293775907"
+      "capability_id": "cap-1ac06d1bc446f08d422c0ab7"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "play-tic-tac-toe",
-      "description": "Visual board-state interpretation, legal-move reasoning, and grasp-and-place motion for board pieces.",
+      "description": "Board-state grounding with reachable cell selection and staged end-effector placement.",
       "implementation": {
         "kind": "code-policy",
         "module": "rdj_tic.model",
@@ -1104,7 +1086,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -1129,13 +1111,13 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-ac489886a5d98d0c4697d6ae"
+      "capability_id": "cap-4db5aa2d618010309d7e8ca6"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "plug-in-charger",
-      "description": "RGB plug and socket pose estimation, with grasp, handoff, alignment, and contact-motion stages.",
+      "description": "Connector-socket geometry grounding with grasp, handoff, alignment, and contact control.",
       "implementation": {
         "kind": "code-policy",
         "module": "rdj_rgb_adapters.plug_in_charger",
@@ -1211,7 +1193,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -1236,13 +1218,13 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-efd208aba54874b1460ec224"
+      "capability_id": "cap-410157fc67416f66f7fcd9b0"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "pour-balls-into-vase",
-      "description": "Container localization, grasp construction, and wrist-rotation stages for transferring solid contents through an opening.",
+      "description": "Container-opening grounding with geometry-ranked grasp, supported transfer, and tilt control.",
       "implementation": {
         "kind": "code-policy",
         "module": "PourBallsRGB.model",
@@ -1290,7 +1272,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -1315,7 +1297,7 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-2701acddf28aa1f3bb3a22e8"
+      "capability_id": "cap-a3ef2f0299907b072c8ee336"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
@@ -1369,7 +1351,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -1394,7 +1376,7 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-112b3c377ef63562e26fdce7"
+      "capability_id": "cap-d482d99a733849038c12e621"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
@@ -1448,7 +1430,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -1473,13 +1455,13 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-67ddb4b9d24ff9e030855324"
+      "capability_id": "cap-1ac73656fd70f254512fddc6"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "press-by-number",
-      "description": "Visual digit recognition, instruction-based contact scheduling, and timed pressing motion using robot-state feedback.",
+      "description": "Visual symbol grounding with bounded counted contact and confirmation control.",
       "implementation": {
         "kind": "code-policy",
         "module": "rdj_rgb_adapters.press_by_number",
@@ -1558,7 +1540,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -1583,13 +1565,13 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-06624bea13f37106f7e9e1af"
+      "capability_id": "cap-a7dc85e9660941c5c1700b7b"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "push-t",
-      "description": "RGB estimation of a planar T-shaped object and target outline, with contact planning and staged pushing motion.",
+      "description": "RGB pose tracking and direct planar contact control for a T-shaped object and its target pose.",
       "implementation": {
         "kind": "code-policy",
         "module": "rdj_push_submission.model",
@@ -1641,7 +1623,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -1666,13 +1648,24 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-f5fab53612d34416389059a5"
+      "capability_id": "cap-89d463e28ea9687a1f004e94",
+      "observation_cues": [
+        "A T-shaped planar object and its target pose must be observable."
+      ],
+      "execution_scope": {
+        "requirements": [
+          "A T-shaped planar object and its target pose must be observable."
+        ],
+        "unsupported": [
+          "Does not implement straightedge grasping or tool-mediated alignment of multiple blocks."
+        ]
+      }
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "solve-equation",
-      "description": "RGB symbol recognition and arithmetic reasoning, followed by geometric grasp and placement of a selected piece.",
+      "description": "Visual symbol and relation grounding with constrained selection and geometric placement.",
       "implementation": {
         "kind": "code-policy",
         "module": "rdj_equation.model",
@@ -1720,7 +1713,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -1745,13 +1738,13 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-1ca90efd7b625b63d9db23a6"
+      "capability_id": "cap-0b57bb22d3e44478de699afc"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "sort-nesting-dolls-by-size",
-      "description": "Visual size estimation and ordering, with geometric grasp construction and staged placement of nesting objects.",
+      "description": "Visual size grounding and ordering with reachable grasp and staged placement.",
       "implementation": {
         "kind": "code-policy",
         "module": "sort_nesting_dolls.model",
@@ -1800,7 +1793,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -1825,7 +1818,7 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-33c863e01bf07f9e3b293507"
+      "capability_id": "cap-3e80b50aef1bc89f2bb66495"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
@@ -1917,7 +1910,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -1942,13 +1935,13 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-9465bfe69a62b075b7d4bee5"
+      "capability_id": "cap-7d24c0bf5dc5747fe414f74d"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "store-tools-in-toolbox",
-      "description": "RGB tool and opening localization, grasp construction, clearance-aware transport, and release motion.",
+      "description": "Object and container geometry grounding with orientation-preserving transport control.",
       "implementation": {
         "kind": "code-policy",
         "module": "rdj_store_tools.model",
@@ -2025,7 +2018,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -2050,13 +2043,13 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-f8cc3e7e3340222a024012af"
+      "capability_id": "cap-ffd505d86e34bc9a978d1423"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
       "kind": "implementation_contract",
       "skill_name": "swap-t",
-      "description": "RGB tracking of T-shaped objects, intermediate-placement planning, and visually gated transfer stages.",
+      "description": "Visual identity tracking with qualified intermediate placement and identity-preserving transfer.",
       "implementation": {
         "kind": "code-policy",
         "module": "rdj_swap_t.model",
@@ -2104,7 +2097,7 @@
       ],
       "capability_limits": [
         {
-          "statement": "Execute the declared stage programs; this record does not authorize arbitrary stage reordering or cross-backend synthesis.",
+          "statement": "Execute the declared operations through their contracts; this record does not authorize unsupported parameter changes or cross-backend synthesis.",
           "evidence": {
             "root": "policy-runtime",
             "path": "skill_model.py",
@@ -2129,7 +2122,7 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-c1a85df787924c886c4c6008"
+      "capability_id": "cap-41f1df123f0369ff04ce58c3"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
@@ -2196,7 +2189,11 @@
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-df5bdef0cc3361a3e904fa4d"
+      "capability_id": "cap-d0fce691a475f826b640e47b",
+      "observation_cues": [
+        "The current RGB observation and robot state provide the information needed for the next action.",
+        "The instruction does not require causal visual history or recovery of an occluded prior state."
+      ]
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",

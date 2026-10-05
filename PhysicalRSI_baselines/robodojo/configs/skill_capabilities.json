@@ -293,29 +293,8 @@
         }
       ],
       "geometry_support": {
-        "status": "declared_source_constraints",
-        "object_vocabulary": [
-          "camera",
-          "toy_car",
-          "watch",
-          "pen",
-          "garage"
-        ],
-        "container_count": 3,
-        "evidence": [
-          {
-            "root": "code-skills",
-            "path": "skills/rdj_v1_classify_objects/6bb861ace4b706d9/rdj_v1_classify_objects/perception.py",
-            "sha256": "1e6b77c65f24340423f7d0662bd467bad3dc25655980fb4312afda711d9420e6",
-            "line": 32
-          },
-          {
-            "root": "code-skills",
-            "path": "skills/rdj_v1_classify_objects/6bb861ace4b706d9/rdj_v1_classify_objects/model.py",
-            "sha256": "10f83169684d71b097d8e59a23ac5c905a6a04e247cbcd7bec9c83304dfc24b6",
-            "line": 108
-          }
-        ]
+        "status": "not_fully_formalized",
+        "meaning": "Do not infer geometric compatibility from a skill name alone."
       },
       "provenance": {
         "type": "implementation_inspection",
@@ -331,7 +310,7 @@
           "line": 107
         }
       },
-      "capability_id": "cap-eaa4a8e2fed2dc333154aae6"
+      "capability_id": "cap-99c749c250639637916862f4"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",
@@ -558,35 +537,14 @@
         }
       ],
       "geometry_support": {
-        "status": "declared_source_constraints",
-        "rgb_qualified_instances": {
-          "red": 1,
-          "green": 1,
-          "blue": 1,
-          "cup": 3
-        },
-        "camera_geometry": "Fixed implementation calibration; not estimated per episode",
-        "silhouette_resource": "public_shapes.npz",
-        "evidence": [
-          {
-            "root": "code-skills",
-            "path": "skills/CoverHarnessRGB/ea16ca19ec827b31/CoverHarnessRGB/perception.py",
-            "sha256": "0b48b8a5effed82dc25fa298391c3b990492dd906591933e44e86183ea33f42a",
-            "line": 8
-          },
-          {
-            "root": "code-skills",
-            "path": "skills/CoverHarnessRGB/ea16ca19ec827b31/CoverHarnessRGB/perception.py",
-            "sha256": "0b48b8a5effed82dc25fa298391c3b990492dd906591933e44e86183ea33f42a",
-            "line": 51
-          }
-        ]
+        "status": "not_fully_formalized",
+        "meaning": "Do not infer geometric compatibility from a skill name alone."
       },
       "provenance": {
         "type": "implementation_inspection",
         "rollout_derived": false
       },
-      "capability_id": "cap-4a73ffcf4c5b8215479fdd8b"
+      "capability_id": "cap-99d1de5fa0e382c6c280e0da"
     },
     {
       "schema": "physicalrsi.skill-capability-memory/v1",

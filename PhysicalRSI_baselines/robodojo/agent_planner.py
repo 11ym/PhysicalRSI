@@ -180,47 +180,13 @@ class AgentPlanner:
                     or any(not isinstance(name, str) for name in plan['operations'])):
                 raise ValueError('Agent must return a bounded executable operation sequence')
             names = plan['operations']
-            if compositions is not None and plan.get('composition') not in compositions:
-                # Models occasionally add whitespace or a presentation wrapper to a
-                # name.  Resolve that formatting noise from the capability contract,
-                # never from a task name: a valid operation belongs to the one
-                # operation-library composition, while an empty/invalid operation
-                # list uses the general visual composition.
-                proposed = plan.get('composition')
-                normalized = proposed.strip() if isinstance(proposed, str) else ''
-                if normalized in compositions:
-                    plan = dict(plan, composition=normalized)
-                else:
-                    library_name = next((name for name, entry in compositions.items()
-                                         if isinstance(entry.get('steps'), list)
-                                         and entry['steps'][-1] == 'memory-program-library'), None)
-                    visual_name = next((name for name, entry in compositions.items()
-                                        if isinstance(entry.get('steps'), list)
-                                        and entry['steps'][-1] == 'pi05'), None)
-                    registry = operation_program['operations']
-                    if (library_name is not None and names
-                            and len(set(names)) == len(names)
-                            and all(name in registry for name in names)):
-                        plan = dict(plan, composition=library_name)
-                    elif visual_name is not None:
-                        plan = dict(plan, composition=visual_name, operations=[])
-                    else:
-                        raise ValueError('Agent operation plan contains an unknown composition')
             if compositions is not None:
+                if (not isinstance(plan.get('composition'), str)
+                        or plan['composition'] not in compositions):
+                    raise ValueError('Agent operation plan contains an unknown composition')
                 uses_library = compositions[plan['composition']]['steps'][-1] == 'memory-program-library'
                 if uses_library and not names:
-                    # An empty operation list means that the capability memory did not
-                    # contain a contract that matched the current instruction and
-                    # scene.  Continue with the general visual skill when it is
-                    # available; this is a capability-level fallback, not a task
-                    # lookup.  The selected skill remains fixed for the episode.
-                    fallback = next((name for name, entry in compositions.items()
-                                     if isinstance(entry.get('steps'), list)
-                                     and entry['steps'][-1] == 'pi05'), None)
-                    if fallback is None:
-                        raise ValueError('Operation library requires an executable operation')
-                    plan = dict(plan, composition=fallback, operations=[])
-                    names = plan['operations']
+                    raise ValueError('Operation library requires an executable operation')
                 if not uses_library and names:
                     raise ValueError('Operations cannot be attached to an independent execution skill')
             if not names:

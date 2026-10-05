@@ -25,8 +25,8 @@
     "harness_state": "harness_state/state.json",
     "compositions": "skills/compositions.json",
     "runtime_source": "skills/source/files.sha256.json",
-    "assets": "assets.json",
-    "skill_package": "skills/package.json"
+    "skill_package": "skills/package.json",
+    "asset_downloader": "download_assets.py"
   },
   "external_requirements": {
     "policy_provider": "XPolicyLab",

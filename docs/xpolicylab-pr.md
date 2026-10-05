@@ -15,5 +15,7 @@ execution revisions for comparison with the reviewed artifact.
 
 Evaluation only: installation, runtime source, checkpoint downloads, and standard
 server/client scripts are included. Training and data processing are unsupported.
-No pull request has been created by this preparation step. Record fresh debug and
-simulator results and artifact availability before claiming release readiness.
+The published integration is [XPolicyLab PR #147](https://github.com/XPolicyLab/XPolicyLab/pull/147).
+The RoboDojo baseline follows its public observation/action interface, inherited-pipe
+code workers, and downloaded asset manifest. Benchmark qualification remains separate
+from installation and debug-environment checks.

@@ -22,3 +22,13 @@ training are unsupported; `process_data.sh` and `train.sh` are intentionally abs
 Checkpoint architecture/configuration metadata is used solely for model loading.
 There is no training-release commitment. Official acceptance still depends on the
 benchmark's review of the complete evaluated system and its evidence.
+
+## Downloaded skill assets
+
+The adapter downloads the asset manifest together with the library and verifies
+its checksum. The default library matches [XPolicyLab PR #147](https://github.com/XPolicyLab/XPolicyLab/pull/147).
+Use the installed adapter's `download_assets.py --output skill-assets` command.
+An existing asset directory and generated skill configuration are not upgraded
+automatically; install into a fresh directory and regenerate the configuration.
+Code sources remain readable. The library still contains task-specific geometry
+assumptions; the release does not claim that every code skill is layout-independent.

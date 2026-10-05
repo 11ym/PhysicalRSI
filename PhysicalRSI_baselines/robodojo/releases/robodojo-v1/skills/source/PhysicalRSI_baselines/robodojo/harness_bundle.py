@@ -22,7 +22,7 @@ def validate(bundle: Path) -> dict:
     required.append(manifest["components"]["provenance"])
     required.append(manifest["components"]["compositions"])
     required.append(manifest["components"]["runtime_source"])
-    required.append(manifest["components"]["assets"])
+    required.append(manifest["components"]["asset_downloader"])
     missing = [item for item in required if not (bundle / item).is_file()]
     if missing:
         raise ValueError(f"Bundle is missing files: {missing}")
