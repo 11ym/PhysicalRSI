@@ -6,6 +6,7 @@
 <a href="LICENSE"><img alt="License: Apache 2.0" src="https://img.shields.io/badge/License-Apache_2.0-4d8d80?style=flat-square"></a>
 <a href="#whats-next"><img alt="Preview" src="https://img.shields.io/badge/Status-Preview-d1a66a?style=flat-square"></a>
 <a href="https://mmlab.hk/research/PhysicalRSI"><img alt="Project website" src="https://img.shields.io/badge/Website-PhysicalRSI-526b83?style=flat-square"></a>
+<a href="https://github.com/XPolicyLab/XPolicyLab"><img alt="XPolicyLab" src="https://img.shields.io/badge/GitHub-XPolicyLab-526b83?style=flat-square&logo=github&logoColor=white"></a>
 
 <pre>
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠤⠐⠂⠀⠒⠢⠄⡀
