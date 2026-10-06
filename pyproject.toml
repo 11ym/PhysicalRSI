@@ -25,6 +25,8 @@ include = ["PhysicalRSI*", "examples*"]
 exclude = ["PhysicalRSI_baselines.robodojo.XPolicyLab*", "PhysicalRSI_baselines.robodojo.releases*"]
 
 [tool.setuptools.package-data]
+"PhysicalRSI_Autoresearch" = ["*.md", "*.json"]
+"PhysicalRSI_baselines.opentrons_liquid_handling" = ["README.md"]
 "PhysicalRSI.cli" = ["assets/*"]
 "PhysicalRSI_demos.showcase" = ["web/*"]
 "PhysicalRSI_demos.auto_engineering" = ["README.md", "TODO.md", "requirements-isaac.txt"]
