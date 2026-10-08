@@ -48,8 +48,10 @@ Bring your own robot, simulator, policy, and research questions. Compose them in
 For hypothesis-driven robot protocol experiments, see
 [PhysicalRSI Autoresearch](PhysicalRSI_Autoresearch/README.md): a resumable
 liquid-handling research loop with upstream Opentrons simulation, independent
-liquid auditing, and recorded keep/discard decisions. It runs software protocols;
-it does not establish wet-lab qualification.
+liquid auditing, and recorded keep/discard decisions. The v0.1 research
+coordination checkpoint also adds scoped memory, durable hypothesis/experiment
+records and evidence-backed heartbeat reviews for external research agents.
+It runs software protocols and does not establish wet-lab qualification.
 
 
 ```bash
