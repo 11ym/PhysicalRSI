@@ -134,32 +134,27 @@ Save matching receipts at `evaluation/environment-before.json`,
 checks the committed receipts again. These hashes do not attest firmware,
 mechanical calibration or physical scene restoration.
 
-## Offline checks
+## Installation and runtime
 
 From the repository root, on Python 3.11 or newer:
 
 ```bash
-python -m pip install -e '.[test,real-robot]'
-python -m pytest -q tests/real_robot
+python -m pip install -e '.[real-robot]'
 ```
 
-The five isolated execution tests skip when no runtime is supplied. On Linux
-with bubblewrap, libseccomp and user namespaces available, prepare a new runtime
-outside the repository and run the full method tests:
+L1 isolation requires Linux, bubblewrap, libseccomp and user namespaces. Prepare
+a new runtime outside the repository:
 
 ```bash
 python -c 'from PhysicalRSI_demos.real_robot.policy_runtime import prepare_runtime; prepare_runtime("/tmp/physicalrsi-real-robot-runtime")'
-PHYSICALRSI_TEST_RUNTIME=/tmp/physicalrsi-real-robot-runtime python -m pytest -q tests/real_robot
 ```
 
-Video extraction tests also need `ffmpeg` and `ffprobe`. All tests use fake robots
-and deterministic model/human fixtures. The end-to-end test exercises actual
-isolation, RGB-conditioned control, rescue evidence, proposals, selection and
-lineage on changed synthetic layouts. It proves software integration, not GPT
-learning ability, real grasp success, pouring success or a measured improvement
-on physical robots.
+Historical video extraction also needs `ffmpeg` and `ffprobe`.
+
+The contribution contains the method and integration documentation. Its regression
+tests remain in the development workspace and are not included here. Local
+validation exercised isolation, synthetic RGB control, rescue learning and
+Self-Harness selection with fake robots and deterministic models. It does not
+establish GPT learning ability or physical task success.
 
 `provenance.json` records SHA-256 values of the source modules at extraction.
-Deployment-only CLI tests were omitted; method tests were ported to the new
-package, with reusable skills supplied explicitly and runtime location configured
-through `PHYSICALRSI_TEST_RUNTIME`.
