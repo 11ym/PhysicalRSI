@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from PhysicalRSI_baselines.real_robot.models import VisualCodeModel
+from PhysicalRSI_demos.real_robot.models import VisualCodeModel
 
 
 def response(source):
@@ -68,8 +68,8 @@ def test_malformed_response_can_be_repaired_without_execution(tmp_path):
 
 
 def test_existing_parent_does_not_remove_reusable_skill_source(tmp_path):
-    from PhysicalRSI_baselines.real_robot.contracts import Task
-    from PhysicalRSI_baselines.real_robot.library import PolicyLibrary, dependency_files
+    from PhysicalRSI_demos.real_robot.contracts import Task
+    from PhysicalRSI_demos.real_robot.library import PolicyLibrary, dependency_files
     task = Task("pour-water-bottle-into-cup", "Pour into cup", "Visible water")
     source = "def side_enclose_grasp(robot, item):\n    robot.relate(item)\n"
     library = PolicyLibrary(tmp_path / "library", foundation={"model": "offline-test"},

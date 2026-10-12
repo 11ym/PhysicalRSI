@@ -82,12 +82,12 @@ not prove grasp retention or task success.
 A host composes these objects (this fragment is not a robot launcher):
 
 ```python
-from PhysicalRSI_baselines.real_robot.contracts import Level
-from PhysicalRSI_baselines.real_robot.controllers import L2Controller
-from PhysicalRSI_baselines.real_robot.coordinator import Coordinator
-from PhysicalRSI_baselines.real_robot.experiment import DevelopingL1
-from PhysicalRSI_baselines.real_robot.library import PolicyLibrary
-from PhysicalRSI_baselines.real_robot.video_learning import VideoReferenceL3
+from PhysicalRSI_demos.real_robot.contracts import Level
+from PhysicalRSI_demos.real_robot.controllers import L2Controller
+from PhysicalRSI_demos.real_robot.coordinator import Coordinator
+from PhysicalRSI_demos.real_robot.experiment import DevelopingL1
+from PhysicalRSI_demos.real_robot.library import PolicyLibrary
+from PhysicalRSI_demos.real_robot.video_learning import VideoReferenceL3
 
 l1 = DevelopingL1(library=library, model=development_model, runtime=runtime,
                   perception=perception, parent=parent)
@@ -148,7 +148,7 @@ with bubblewrap, libseccomp and user namespaces available, prepare a new runtime
 outside the repository and run the full method tests:
 
 ```bash
-python -c 'from PhysicalRSI_baselines.real_robot.policy_runtime import prepare_runtime; prepare_runtime("/tmp/physicalrsi-real-robot-runtime")'
+python -c 'from PhysicalRSI_demos.real_robot.policy_runtime import prepare_runtime; prepare_runtime("/tmp/physicalrsi-real-robot-runtime")'
 PHYSICALRSI_TEST_RUNTIME=/tmp/physicalrsi-real-robot-runtime python -m pytest -q tests/real_robot
 ```
 

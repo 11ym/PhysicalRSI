@@ -14,17 +14,17 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from PhysicalRSI_baselines.real_robot.capabilities import validate_direct_action
-from PhysicalRSI_baselines.real_robot.contracts import (Assessment, CapabilityUnavailable, ExecutionUncertain,
+from PhysicalRSI_demos.real_robot.capabilities import validate_direct_action
+from PhysicalRSI_demos.real_robot.contracts import (Assessment, CapabilityUnavailable, ExecutionUncertain,
                                     Frame, HumanDecisionPending, Level, Observation, Outcome, Progress, SensorUnavailable, Task)
-from PhysicalRSI_baselines.real_robot.controllers import L2Controller
-from PhysicalRSI_baselines.real_robot.controllers import L1Controller
-from PhysicalRSI_baselines.real_robot.coordinator import Coordinator
-from PhysicalRSI_baselines.real_robot.evidence import Episode, metrics
-from PhysicalRSI_baselines.real_robot.monitor import MonitoringSystem, TerminalJudge
-from PhysicalRSI_baselines.real_robot.policy_runtime import PolicyRuntime, validate_source
-from PhysicalRSI_baselines.real_robot.demonstrations import import_hdf5
-from PhysicalRSI_baselines.real_robot.library import PolicyLibrary
+from PhysicalRSI_demos.real_robot.controllers import L2Controller
+from PhysicalRSI_demos.real_robot.controllers import L1Controller
+from PhysicalRSI_demos.real_robot.coordinator import Coordinator
+from PhysicalRSI_demos.real_robot.evidence import Episode, metrics
+from PhysicalRSI_demos.real_robot.monitor import MonitoringSystem, TerminalJudge
+from PhysicalRSI_demos.real_robot.policy_runtime import PolicyRuntime, validate_source
+from PhysicalRSI_demos.real_robot.demonstrations import import_hdf5
+from PhysicalRSI_demos.real_robot.library import PolicyLibrary
 
 PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j7x8AAAAASUVORK5CYII=")
 
@@ -130,7 +130,7 @@ class SystemTests(unittest.TestCase):
             self.obs.public()
 
     def test_saved_rescue_learning_reopens_only_public_development_evidence(self):
-        from PhysicalRSI_baselines.real_robot.learning import read_development_episode, learn_from_episodes
+        from PhysicalRSI_demos.real_robot.learning import read_development_episode, learn_from_episodes
         episode = self.episode()
         episode.observation(self.obs)
         episode.event("controller_enter", level="L1")
@@ -159,7 +159,7 @@ class SystemTests(unittest.TestCase):
         self.assertTrue((self.root / "learning/development-public.json").is_file())
 
     def test_saved_learning_rejects_validation_changed_events_and_images(self):
-        from PhysicalRSI_baselines.real_robot.learning import read_development_episode
+        from PhysicalRSI_demos.real_robot.learning import read_development_episode
         episode = self.episode()
         episode.observation(self.obs)
         episode.event("controller_enter", level="L2")
@@ -183,7 +183,7 @@ class SystemTests(unittest.TestCase):
             read_development_episode(episode.root)
 
     def test_saved_learning_rejects_private_image_paths_and_duplicate_input(self):
-        from PhysicalRSI_baselines.real_robot.learning import read_development_episode, learn_from_episodes
+        from PhysicalRSI_demos.real_robot.learning import read_development_episode, learn_from_episodes
         episode = self.episode()
         episode.observation(self.obs)
         episode.event("controller_enter", level="L2")
@@ -200,13 +200,13 @@ class SystemTests(unittest.TestCase):
             read_development_episode(episode.root)
 
     def test_execution_cannot_reuse_validation_after_adapter_changes(self):
-        from PhysicalRSI_baselines.real_robot.library import dependency_files
+        from PhysicalRSI_demos.real_robot.library import dependency_files
         library = PolicyLibrary(self.root / "library", foundation=dict(model="test-only"))
         candidate = library.freeze(task=self.task, source="def policy(robot, memory):\n    return None\n", memory={})
         library.load_for_execution(candidate)
         changed = dependency_files()
         changed.pop(next(iter(changed)))
-        with patch("PhysicalRSI_baselines.real_robot.library.dependency_files", return_value=changed):
+        with patch("PhysicalRSI_demos.real_robot.library.dependency_files", return_value=changed):
             with self.assertRaisesRegex(ValueError, "adapter/API changed"):
                 library.load_for_execution(candidate)
         # Its immutable source remains available for development, not execution qualification.
@@ -225,7 +225,7 @@ class SystemTests(unittest.TestCase):
 
 
     def test_evolution_method_identity_excludes_changing_round_data_and_reply_routing(self):
-        from PhysicalRSI_baselines.real_robot.evolution import DevelopmentProposer
+        from PhysicalRSI_demos.real_robot.evolution import DevelopmentProposer
         def model(session):
             return SimpleNamespace(config=SimpleNamespace(public=lambda: dict(
                 kind="external-model-mailbox", model="fixture", session=session)))
@@ -240,8 +240,8 @@ class SystemTests(unittest.TestCase):
         self.assertNotEqual(b.identity(), c.identity())
 
     def test_paired_evaluation_rejects_mixed_qualification_and_unearned_success(self):
-        from PhysicalRSI_baselines.real_robot.evolution import PairedEpisodeEvaluator
-        from PhysicalRSI_baselines.real_robot.evidence import write_new
+        from PhysicalRSI_demos.real_robot.evolution import PairedEpisodeEvaluator
+        from PhysicalRSI_demos.real_robot.evidence import write_new
         from PhysicalRSI_core.infra.storage import file_digest
         for index, overrides in enumerate((dict(qualification="physical"), dict(solved_by=None))):
             directory = self.root / str(index)
@@ -268,7 +268,7 @@ class SystemTests(unittest.TestCase):
             for camera in ("front", "left", "right")})
 
     def test_visual_features_use_rgb_only_and_compute_offsets(self):
-        from PhysicalRSI_baselines.real_robot.visual_perception import VisualPerception
+        from PhysicalRSI_demos.real_robot.visual_perception import VisualPerception
         raw = self.visual_reply()
         raw["views"]["left"]["rod center"] = dict(visibility="occluded", uv=None, confidence=.9)
         model = Model([(json.dumps(raw), [], [])])
@@ -288,7 +288,7 @@ class SystemTests(unittest.TestCase):
         self.assertNotIn("qpos26", json.dumps(model.histories))
 
     def test_visual_features_reject_privileged_or_invalid_outputs(self):
-        from PhysicalRSI_baselines.real_robot.visual_perception import project_features
+        from PhysicalRSI_demos.real_robot.visual_perception import project_features
         cases = []
         raw = self.visual_reply(); raw["success"] = True; cases.append(raw)
         raw = self.visual_reply(); raw["observation_id"] = "old"; cases.append(raw)
@@ -302,13 +302,13 @@ class SystemTests(unittest.TestCase):
                 project_features(raw, self.obs, ["rod center", "thumb tip"])
 
     def test_visual_features_reject_tools_late_output_and_changed_images(self):
-        from PhysicalRSI_baselines.real_robot.visual_perception import VisualPerception
+        from PhysicalRSI_demos.real_robot.visual_perception import VisualPerception
         raw = self.visual_reply()
         model = Model([(json.dumps(raw), [dict(name="act")], [])])
         with self.assertRaises(CapabilityUnavailable):
             VisualPerception(model).look(self.obs, ["rod center", "thumb tip"], deadline=time.monotonic()+10)
         model = Model([(json.dumps(raw), [], [])])
-        with patch("PhysicalRSI_baselines.real_robot.visual_perception.time.monotonic", side_effect=[0, 2]):
+        with patch("PhysicalRSI_demos.real_robot.visual_perception.time.monotonic", side_effect=[0, 2]):
             with self.assertRaises(CapabilityUnavailable):
                 VisualPerception(model).look(self.obs, ["rod center", "thumb tip"], deadline=1)
         def corrupt(history, tools):
@@ -319,7 +319,7 @@ class SystemTests(unittest.TestCase):
             VisualPerception(model).look(self.obs, ["rod center", "thumb tip"], deadline=time.monotonic()+10)
 
     def test_isolated_l1_branches_on_visual_relation_without_metric_scene(self):
-        from PhysicalRSI_baselines.real_robot.visual_perception import VisualPerception
+        from PhysicalRSI_demos.real_robot.visual_perception import VisualPerception
         runtime = Path(__import__("os").environ.get("PHYSICALRSI_TEST_RUNTIME", "/tmp/physicalrsi-real-robot-runtime"))
         if not (runtime / "manifest.json").is_file():
             self.skipTest("Prepare the isolated Python runtime")
@@ -465,7 +465,7 @@ class SystemTests(unittest.TestCase):
             # The pre-action success must be saved, but cannot finish the trial.
             future.set_result(Assessment(observed.id, Outcome.SUCCESS, Progress.IMPROVED,
                                          "PRIVATE HUMAN CONTACT INFORMATION", "human"))
-        with patch("PhysicalRSI_baselines.real_robot.coordinator.time.sleep", side_effect=reply_during_wait):
+        with patch("PhysicalRSI_demos.real_robot.coordinator.time.sleep", side_effect=reply_during_wait):
             result = c.run()
         self.assertEqual(len(requests), 2)
         self.assertNotEqual(replies[0], replies[1])
@@ -485,8 +485,8 @@ class SystemTests(unittest.TestCase):
         clock = [0.]
         def advance(seconds):
             clock[0] += seconds
-        with patch("PhysicalRSI_baselines.real_robot.coordinator.time.monotonic", side_effect=lambda: clock[0]), \
-                patch("PhysicalRSI_baselines.real_robot.coordinator.time.sleep", side_effect=advance):
+        with patch("PhysicalRSI_demos.real_robot.coordinator.time.monotonic", side_effect=lambda: clock[0]), \
+                patch("PhysicalRSI_demos.real_robot.coordinator.time.sleep", side_effect=advance):
             result = c.run()
         self.assertEqual(result["outcome"], "uncertain")
         self.assertEqual(result["status"], "awaiting_human_judgment")
@@ -499,7 +499,7 @@ class SystemTests(unittest.TestCase):
         c = self.coordinator(ScriptedMonitor([Outcome.UNCERTAIN]*12),
                              {Level.L1:ActionController(), Level.L2:Unavailable(), Level.L3:Unavailable()}, judge)
         c.allowed_levels = (Level.L1,)
-        with patch("PhysicalRSI_baselines.real_robot.coordinator.time.sleep", side_effect=AssertionError("Unnecessary wait")):
+        with patch("PhysicalRSI_demos.real_robot.coordinator.time.sleep", side_effect=AssertionError("Unnecessary wait")):
             result = c.run()
         self.assertEqual(result["outcome"], "uncertain")
         self.assertEqual(result["status"], "evaluation_uncertain")
@@ -527,7 +527,7 @@ class SystemTests(unittest.TestCase):
         self.assertEqual(parse("没改善：PRIVATE HUMAN ANSWER").observation_id, self.obs.id)
 
     def test_terminal_routes_judgment_and_takeover_without_crossing_answers(self):
-        from PhysicalRSI_baselines.real_robot.dialogue import TerminalDialogue
+        from PhysicalRSI_demos.real_robot.dialogue import TerminalDialogue
         lines, output = Queue(), Queue()
         def read(_):
             value = lines.get()
@@ -560,7 +560,7 @@ class SystemTests(unittest.TestCase):
             lines.put(None)
 
     def test_terminal_eof_leaves_judgment_pending_instead_of_inventing_failure(self):
-        from PhysicalRSI_baselines.real_robot.dialogue import TerminalDialogue
+        from PhysicalRSI_demos.real_robot.dialogue import TerminalDialogue
         def ended(_):
             raise EOFError()
         dialogue = TerminalDialogue(read=ended, write=lambda _: None)
@@ -570,7 +570,7 @@ class SystemTests(unittest.TestCase):
             future.result(timeout=1)
 
     def test_sequential_episodes_cancel_old_questions_and_share_one_terminal_reader(self):
-        from PhysicalRSI_baselines.real_robot.dialogue import TerminalDialogue
+        from PhysicalRSI_demos.real_robot.dialogue import TerminalDialogue
         import threading
         lines, readers = Queue(), []
         def read(_):
@@ -663,7 +663,7 @@ class SystemTests(unittest.TestCase):
         self.assertEqual(c.robot.stops, 1)
 
     def test_camera_loss_after_confirmed_action_is_not_unknown_actuation(self):
-        from PhysicalRSI_baselines.real_robot.physical_port import PhysicalRobot
+        from PhysicalRSI_demos.real_robot.physical_port import PhysicalRobot
         job_id = "a" * 32
         owner = self.root / "owner"
         job = owner / "jobs" / job_id
@@ -687,7 +687,7 @@ class SystemTests(unittest.TestCase):
         fallback = ActionController()
         c = self.coordinator(ScriptedMonitor([Outcome.ONGOING]),
                              {Level.L1: Action(), Level.L2: fallback, Level.L3: fallback})
-        with patch("PhysicalRSI_baselines.real_robot.physical_port.uuid.uuid4", return_value=SimpleNamespace(hex=job_id)):
+        with patch("PhysicalRSI_demos.real_robot.physical_port.uuid.uuid4", return_value=SimpleNamespace(hex=job_id)):
             result = c.run()
         self.assertEqual(result["status"], "awaiting_sensor_recovery")
         self.assertEqual(result["outcome"], "uncertain")
@@ -715,7 +715,7 @@ class SystemTests(unittest.TestCase):
         self.assertEqual(fallback.calls, 0)
 
     def test_observation_distinguishes_camera_loss_from_robot_connection_loss(self):
-        from PhysicalRSI_baselines.real_robot.physical_port import PhysicalRobot
+        from PhysicalRSI_demos.real_robot.physical_port import PhysicalRobot
         port = PhysicalRobot.__new__(PhysicalRobot)
         port.released, port.heartbeat_error = False, None
         def unavailable_camera():
@@ -759,7 +759,7 @@ class SystemTests(unittest.TestCase):
             validate_direct_action(action, self.obs)
 
     def test_l2_semantic_gripper_binds_observation_and_receives_measured_result(self):
-        from PhysicalRSI_baselines.real_robot.controllers import direct_tools
+        from PhysicalRSI_demos.real_robot.controllers import direct_tools
         calls = []
         def reply(oid):
             return "", [dict(id=oid, name="gripper", arguments=json.dumps(dict(
@@ -844,7 +844,7 @@ class SystemTests(unittest.TestCase):
         runtime = Path(__import__("os").environ.get("PHYSICALRSI_TEST_RUNTIME", "/tmp/physicalrsi-real-robot-runtime"))
         if not (runtime / "manifest.json").is_file():
             self.skipTest("Prepare a local pure-Python isolation runtime for this integration test")
-        from PhysicalRSI_baselines.real_robot.evolution import DevelopmentProposer, PairedEpisodeEvaluator, make_harness
+        from PhysicalRSI_demos.real_robot.evolution import DevelopmentProposer, PairedEpisodeEvaluator, make_harness
         source = ("def policy(robot, memory):\n"
                   "    scene = robot.scene(['target'])\n"
                   "    target = scene['objects']['target']['pose']\n"
@@ -903,7 +903,7 @@ class SystemTests(unittest.TestCase):
         self.assertEqual(result["decision"]["metrics"][selected]["normalized_score"], 1)
         self.assertEqual(result["decision"]["metrics"][parent["id"]]["normalized_score"], 0)
         self.assertNotIn("validation-scenes", json.dumps(model.histories))
-        from PhysicalRSI_baselines.real_robot.learning import selected_policy
+        from PhysicalRSI_demos.real_robot.learning import selected_policy
         incumbent = selected_policy(self.root / "lineage", task=self.task, qualification="offline")
         self.assertEqual(incumbent["id"], selected)
         with self.assertRaisesRegex(ValueError, "qualification"):

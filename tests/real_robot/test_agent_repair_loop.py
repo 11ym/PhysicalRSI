@@ -12,20 +12,20 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from PhysicalRSI_baselines.real_robot.analysis_tools import AnalysisTools, calculate
-from PhysicalRSI_baselines.real_robot.contracts import Assessment, Frame, Level, Observation, Outcome, Progress, Task, CapabilityUnavailable
-from PhysicalRSI_baselines.real_robot.coordinator import Coordinator
-from PhysicalRSI_baselines.real_robot.evidence import Episode
-from PhysicalRSI_baselines.real_robot.learning import read_development_episode
-from PhysicalRSI_baselines.real_robot.learning_projection import proposal_feedback
-from PhysicalRSI_baselines.real_robot.models import MailboxConfig, MailboxModel, RecordedModel, require_independent_models
-from PhysicalRSI_baselines.real_robot.monitor import MonitoringSystem
-from PhysicalRSI_baselines.real_robot.policy_runtime import validate_source
-from PhysicalRSI_baselines.real_robot.references import RSI
-from PhysicalRSI_baselines.real_robot.library import dependency_files
-from PhysicalRSI_baselines.real_robot.reporting import report_episodes
-from PhysicalRSI_baselines.real_robot.video_reference import VideoReferenceL3
-from PhysicalRSI_baselines.real_robot.guidance import submit, consume
+from PhysicalRSI_demos.real_robot.analysis_tools import AnalysisTools, calculate
+from PhysicalRSI_demos.real_robot.contracts import Assessment, Frame, Level, Observation, Outcome, Progress, Task, CapabilityUnavailable
+from PhysicalRSI_demos.real_robot.coordinator import Coordinator
+from PhysicalRSI_demos.real_robot.evidence import Episode
+from PhysicalRSI_demos.real_robot.learning import read_development_episode
+from PhysicalRSI_demos.real_robot.learning_projection import proposal_feedback
+from PhysicalRSI_demos.real_robot.models import MailboxConfig, MailboxModel, RecordedModel, require_independent_models
+from PhysicalRSI_demos.real_robot.monitor import MonitoringSystem
+from PhysicalRSI_demos.real_robot.policy_runtime import validate_source
+from PhysicalRSI_demos.real_robot.references import RSI
+from PhysicalRSI_demos.real_robot.library import dependency_files
+from PhysicalRSI_demos.real_robot.reporting import report_episodes
+from PhysicalRSI_demos.real_robot.video_reference import VideoReferenceL3
+from PhysicalRSI_demos.real_robot.guidance import submit, consume
 from test_agent_system import Model, FakeRobot, ScriptedMonitor, Unavailable
 
 
@@ -92,7 +92,7 @@ class Repairs(unittest.TestCase):
                                   checkpoint=lambda **kwargs: self.obs)
         lesson = dict(sufficient=False, relative_rule="", applicability="", uncertainty="No visible evidence", evidence_frame_ids=[])
         model = Model([("", [dict(id="finish", name="finish_reference", arguments=json.dumps(lesson))], [])])
-        with patch("PhysicalRSI_baselines.real_robot.video_reference.video_inventory", return_value=[{"front":"episode_0.mp4"}]):
+        with patch("PhysicalRSI_demos.real_robot.video_reference.video_inventory", return_value=[{"front":"episode_0.mp4"}]):
             self.assertTrue(VideoReferenceL3(self.root, model).run(context)["learning_checkpoint"])
         self.assertEqual(context.robot.releases, 0)
         self.assertFalse(self.episode.observations)
@@ -117,9 +117,9 @@ class Repairs(unittest.TestCase):
         def extract(videos, output, **kwargs):
             windows.append((kwargs["start_s"], kwargs["end_s"], kwargs["samples"]))
             return dict(frames=[dict(frame, video_time_s=kwargs["start_s"], source_frame_index=1)])
-        with patch("PhysicalRSI_baselines.real_robot.video_reference.video_inventory", return_value=[{"front":"episode_0.mp4"}]), \
-             patch("PhysicalRSI_baselines.real_robot.video_reference.probe_reference", return_value=({}, {c:[0.,10.] for c in ("front","left","right")})), \
-             patch("PhysicalRSI_baselines.real_robot.video_reference.extract_reference", side_effect=extract):
+        with patch("PhysicalRSI_demos.real_robot.video_reference.video_inventory", return_value=[{"front":"episode_0.mp4"}]), \
+             patch("PhysicalRSI_demos.real_robot.video_reference.probe_reference", return_value=({}, {c:[0.,10.] for c in ("front","left","right")})), \
+             patch("PhysicalRSI_demos.real_robot.video_reference.extract_reference", side_effect=extract):
             result = VideoReferenceL3(self.root, model).run(context)
         self.assertEqual(windows, [(2.,6.,3), (3.1,3.4,7)])
         self.assertTrue(result["sufficient_evidence"])
@@ -231,7 +231,7 @@ class Repairs(unittest.TestCase):
     def test_video_extraction_reads_rgb_with_provenance_and_never_opens_hdf5(self):
         import shutil
         import subprocess
-        from PhysicalRSI_baselines.real_robot.video_reference import video_inventory, extract_reference
+        from PhysicalRSI_demos.real_robot.video_reference import video_inventory, extract_reference
         if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
             self.skipTest("ffmpeg/ffprobe unavailable")
         source = self.root / "demonstrations"
@@ -255,7 +255,7 @@ class Repairs(unittest.TestCase):
         self.assertIn("video-relative", reference["time_semantics"])
 
     def test_online_proposal_failure_preserves_parent_and_allows_fallback(self):
-        from PhysicalRSI_baselines.real_robot.experiment import DevelopingL1
+        from PhysicalRSI_demos.real_robot.experiment import DevelopingL1
         parent = {"id": "retained-parent"}
         def fail(**kwargs):
             raise ValueError("malformed model reply")
@@ -266,7 +266,7 @@ class Repairs(unittest.TestCase):
         self.assertEqual(self.episode.events[-1]["kind"], "online_learning_pending")
 
     def test_l2_analysis_and_return_tool_keep_call_pairs_across_reentry(self):
-        from PhysicalRSI_baselines.real_robot.controllers import L2Controller
+        from PhysicalRSI_demos.real_robot.controllers import L2Controller
         def reply(name, args, index):
             call = dict(id=str(index), name=name, arguments=json.dumps(args))
             native = dict(role="assistant", content="", tool_calls=[dict(id=str(index), type="function",
@@ -303,7 +303,7 @@ class Repairs(unittest.TestCase):
         self.assertEqual(result["status"], "interrupted")
 
     def test_l2_reentry_receives_public_l1_and_l3_handoff_without_private_or_replay_data(self):
-        from PhysicalRSI_baselines.real_robot.controllers import L2Controller
+        from PhysicalRSI_demos.real_robot.controllers import L2Controller
         def reply(index):
             args = json.dumps(dict(reason="More current geometry needed"))
             return "", [dict(id=str(index), name="yield_control", arguments=args)], []
@@ -342,7 +342,7 @@ class Repairs(unittest.TestCase):
         self.assertFalse(context.robot.actions)
 
     def test_l2_language_guidance_is_not_repeated_on_reentry(self):
-        from PhysicalRSI_baselines.real_robot.controllers import L2Controller
+        from PhysicalRSI_demos.real_robot.controllers import L2Controller
         reply = ("", [dict(id="yield", name="yield_control", arguments=json.dumps(dict(reason="Need help")))], [])
         model = Model([reply, reply])
         controller = L2Controller(model)
@@ -355,7 +355,7 @@ class Repairs(unittest.TestCase):
         self.assertEqual(json.dumps(model.histories[-1]).count("UNIQUE HUMAN SIDE GRASP HINT"), 1)
 
     def test_l2_inherits_only_policy_lesson_text_and_known_robot_frames(self):
-        from PhysicalRSI_baselines.real_robot.controllers import L2Controller
+        from PhysicalRSI_demos.real_robot.controllers import L2Controller
         reply = ("", [dict(id="yield", name="yield_control", arguments=json.dumps(dict(reason="Need view")))], [])
         model = Model([reply, reply])
         inherited = dict(policy_id="frozen-parent", memory=dict(
@@ -380,7 +380,7 @@ class Repairs(unittest.TestCase):
         self.assertFalse(context.robot.actions)
 
     def test_online_and_final_learning_retain_actual_runtime_capabilities(self):
-        from PhysicalRSI_baselines.real_robot.experiment import DevelopingL1
+        from PhysicalRSI_demos.real_robot.experiment import DevelopingL1
         captured = []
         library = SimpleNamespace(propose=lambda **kwargs: captured.append(kwargs['feedback'][0]))
         learner = DevelopingL1(library=library, model=None, runtime=None,

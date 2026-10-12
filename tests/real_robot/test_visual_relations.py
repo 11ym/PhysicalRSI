@@ -16,12 +16,12 @@ from PIL import Image, ImageDraw
 from scipy.spatial.transform import Rotation
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from PhysicalRSI_baselines.real_robot.contracts import Frame, Observation, Task
-from PhysicalRSI_baselines.real_robot.evidence import Episode
-from PhysicalRSI_baselines.real_robot.controllers import L1Controller
-from PhysicalRSI_baselines.real_robot.policy_runtime import PolicyRuntime
-from PhysicalRSI_baselines.real_robot.visual_perception import project_features
-from PhysicalRSI_baselines.real_robot.visual_servo import ServoSettings, VisualServo, rotation, validate_relations
+from PhysicalRSI_demos.real_robot.contracts import Frame, Observation, Task
+from PhysicalRSI_demos.real_robot.evidence import Episode
+from PhysicalRSI_demos.real_robot.controllers import L1Controller
+from PhysicalRSI_demos.real_robot.policy_runtime import PolicyRuntime
+from PhysicalRSI_demos.real_robot.visual_perception import project_features
+from PhysicalRSI_demos.real_robot.visual_servo import ServoSettings, VisualServo, rotation, validate_relations
 
 PALETTE = {
     "hand A": (0, 255, 0), "hand B": (0, 0, 255), "hand C": (255, 255, 0),

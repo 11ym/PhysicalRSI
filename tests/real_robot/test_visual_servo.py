@@ -12,13 +12,13 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from PhysicalRSI_baselines.real_robot.contracts import ActionRejected, ExecutionUncertain, Frame, Observation, Task
-from PhysicalRSI_baselines.real_robot.evidence import Episode
-from PhysicalRSI_baselines.real_robot.physical_port import PhysicalRobot
-from PhysicalRSI_baselines.real_robot.policy_runtime import PolicyRuntime
-from PhysicalRSI_baselines.real_robot.controllers import L1Controller
-from PhysicalRSI_baselines.real_robot.visual_perception import project_features
-from PhysicalRSI_baselines.real_robot.visual_servo import ServoSettings, VisualServo, fit_response
+from PhysicalRSI_demos.real_robot.contracts import ActionRejected, ExecutionUncertain, Frame, Observation, Task
+from PhysicalRSI_demos.real_robot.evidence import Episode
+from PhysicalRSI_demos.real_robot.physical_port import PhysicalRobot
+from PhysicalRSI_demos.real_robot.policy_runtime import PolicyRuntime
+from PhysicalRSI_demos.real_robot.controllers import L1Controller
+from PhysicalRSI_demos.real_robot.visual_perception import project_features
+from PhysicalRSI_demos.real_robot.visual_servo import ServoSettings, VisualServo, fit_response
 
 
 class PixelDetector:

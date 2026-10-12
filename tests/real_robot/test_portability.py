@@ -4,12 +4,12 @@ import json
 
 import pytest
 
-from PhysicalRSI_baselines.real_robot.contracts import Task
-from PhysicalRSI_baselines.real_robot.evolution import PairedEpisodeEvaluator
-from PhysicalRSI_baselines.real_robot.host_environment import (
+from PhysicalRSI_demos.real_robot.contracts import Task
+from PhysicalRSI_demos.real_robot.evolution import PairedEpisodeEvaluator
+from PhysicalRSI_demos.real_robot.host_environment import (
     capture_environment, verify_trial_environment,
 )
-from PhysicalRSI_baselines.real_robot.library import PolicyLibrary
+from PhysicalRSI_demos.real_robot.library import PolicyLibrary
 
 
 def test_physical_evaluation_requires_host_capture(tmp_path):

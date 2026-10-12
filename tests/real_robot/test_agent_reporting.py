@@ -9,9 +9,9 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from PhysicalRSI_baselines.real_robot.contracts import Level, Outcome, Task
-from PhysicalRSI_baselines.real_robot.evidence import Episode
-from PhysicalRSI_baselines.real_robot.reporting import report_episodes
+from PhysicalRSI_demos.real_robot.contracts import Level, Outcome, Task
+from PhysicalRSI_demos.real_robot.evidence import Episode
+from PhysicalRSI_demos.real_robot.reporting import report_episodes
 
 
 class ReportingTests(unittest.TestCase):

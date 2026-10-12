@@ -8,10 +8,10 @@ from unittest.mock import Mock
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from PhysicalRSI_baselines.real_robot.capabilities import API
-from PhysicalRSI_baselines.real_robot.contracts import CapabilityUnavailable
-from PhysicalRSI_baselines.real_robot.controllers import L1Controller
-from PhysicalRSI_baselines.real_robot.visual_perception import validate_features
+from PhysicalRSI_demos.real_robot.capabilities import API
+from PhysicalRSI_demos.real_robot.contracts import CapabilityUnavailable
+from PhysicalRSI_demos.real_robot.controllers import L1Controller
+from PhysicalRSI_demos.real_robot.visual_perception import validate_features
 
 
 @pytest.mark.parametrize("features,detail", [

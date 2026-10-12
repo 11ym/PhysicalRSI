@@ -5,7 +5,7 @@ from pathlib import Path
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from PhysicalRSI_baselines.real_robot.models import recent_image_history
+from PhysicalRSI_demos.real_robot.models import recent_image_history
 
 
 class ImageHistoryTests(unittest.TestCase):

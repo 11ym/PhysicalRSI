@@ -21,16 +21,16 @@ import numpy as np
 from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from PhysicalRSI_baselines.real_robot.contracts import Level, Task
-from PhysicalRSI_baselines.real_robot.controllers import L1Controller, L2Controller
-from PhysicalRSI_baselines.real_robot.coordinator import Coordinator
-from PhysicalRSI_baselines.real_robot.demonstrations import CAMERA_NAMES, TerminalTeleoperation
-from PhysicalRSI_baselines.real_robot.evidence import Episode, metrics, write_new
-from PhysicalRSI_baselines.real_robot.evolution import DevelopmentProposer, PairedEpisodeEvaluator, make_harness
-from PhysicalRSI_baselines.real_robot.learning import read_development_episode, selected_policy
-from PhysicalRSI_baselines.real_robot.library import PolicyLibrary
-from PhysicalRSI_baselines.real_robot.monitor import MonitoringSystem
-from PhysicalRSI_baselines.real_robot.policy_runtime import PolicyRuntime
+from PhysicalRSI_demos.real_robot.contracts import Level, Task
+from PhysicalRSI_demos.real_robot.controllers import L1Controller, L2Controller
+from PhysicalRSI_demos.real_robot.coordinator import Coordinator
+from PhysicalRSI_demos.real_robot.demonstrations import CAMERA_NAMES, TerminalTeleoperation
+from PhysicalRSI_demos.real_robot.evidence import Episode, metrics, write_new
+from PhysicalRSI_demos.real_robot.evolution import DevelopmentProposer, PairedEpisodeEvaluator, make_harness
+from PhysicalRSI_demos.real_robot.learning import read_development_episode, selected_policy
+from PhysicalRSI_demos.real_robot.library import PolicyLibrary
+from PhysicalRSI_demos.real_robot.monitor import MonitoringSystem
+from PhysicalRSI_demos.real_robot.policy_runtime import PolicyRuntime
 from test_visual_servo import ImagePlant, PixelDetector
 
 
