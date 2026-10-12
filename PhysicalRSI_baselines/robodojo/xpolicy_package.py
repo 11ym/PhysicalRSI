@@ -49,6 +49,9 @@ def install(checkout, *, native_client=False):
             source_root = repository / package
             for incoming in source_root.rglob("*"):
                 relative = incoming.relative_to(source_root)
+                # The physical host method is independent of the simulator adapter.
+                if package == "PhysicalRSI_baselines" and relative.parts[0] == "real_robot":
+                    continue
                 if any(part in {"releases", "__pycache__", ".pytest_cache"} for part in relative.parts):
                     continue
                 if not incoming.is_file() or incoming.suffix not in {".py", ".json", ".yml", ".yaml"} and not incoming.name.startswith(("LICENSE", "NOTICE")):

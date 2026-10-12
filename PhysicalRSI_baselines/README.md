@@ -1,5 +1,10 @@
 # PhysicalRSI-baselines
 
+The [real-robot method](real_robot/README.md) extracts the L1/L2/L3 execution,
+public rescue learning, and independent Self-Harness comparison from the Tianji
+host. Hardware deployment is supplied separately; offline checks confer no
+physical qualification.
+
 The RoboDojo baseline imports **PhysicalRSI's XPolicyLab PR #147** as a pinned git submodule. This organization-owned submission carries forward yanming03's original PR #144. It preserves the complete fork, its adapter runtime, evaluation scripts, source and license notices.
 
 - PR: https://github.com/XPolicyLab/XPolicyLab/pull/147
